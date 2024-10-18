@@ -27,29 +27,38 @@ or
 ## Subscribed Topics
 
   + image_raw (sensor_msgs/Image)
-        raw image topic, for monocular cameras
+    > raw image topic, for monocular cameras
   + velodyne_points (sensor_msgs/PointCloud2)
-                    raw lidar topic
+    > raw lidar topic
 
 ## Published Topics
 
   + image_raw (sensor_msgs/Image)
-         /fused/camera
+    >/fused/camera
 
 ## Parameters
 
-  + cam_topic: '/front_camera/image_raw'  # subscribed camera
-  + cam_info_topic: '/front_camera/camera_info' # with this topic the camera is calibrated
-  + lidar_topic: '/cloud' # subscribed lidar topic
-  + fused_topic: '/fused/points' # fused pointcloud
-  + fused_cam_topic: '/fused/camera' # Published camera topic
-  + fused_cam_pub: True # setting to publish camera
-  + fused_pub: False # setting to publish pointcloud2
-  + fused_cam_veiw: True # the camera image is visible on the screen
-  + camera_positon: [0.0, 0.0, -0.49]  # for the trasform matrix, the position and angle information of the camera and lidar must be entered
+  + cam_topic: '/front_camera/image_raw'
+    >subscribed camera
+  + cam_info_topic: '/front_camera/camera_info'
+    >with this topic the camera is calibrated
+  + lidar_topic: '/cloud'
+    >subscribed lidar topic
+  + fused_topic: '/fused/points'
+    >fused pointcloud
+  + fused_cam_topic: '/fused/camera'
+    > Published camera topic
+  + fused_cam_pub: True
+    >setting to publish camera
+  + fused_pub: False
+    >setting to publish pointcloud2
+  + fused_cam_veiw: True
+    > the camera image is visible on the screen
+  + camera_positon: [0.0, 0.0, -0.49]
   + camera_rpy: [4.71, 4.71, 3.14] 
   + lidar_positon: [0.0, 0.0, 0.0]
   + lidar_rpy: [0.0, 0.0, 0.0]
+     > for the trasform matrix, the position and angle information of the camera and lidar must be entered
 
 
 
