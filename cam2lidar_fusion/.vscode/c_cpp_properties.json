@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/aslan/ws_list/race_car_ws/install/velodyne_gazebo_plugins/include/**",
+        "/home/aslan/ws_list/race_car_ws/install/slam_toolbox/include/**",
+        "/home/aslan/ws_list/race_car_ws/install/prius_msgs/include/**",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_ros/include/**",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/aslan/ws_list/race_car_ws/src/racecar_description/include/**",
+        "/home/aslan/ws_list/race_car_ws/src/slam_toolbox/include/**",
+        "/home/aslan/ws_list/race_car_ws/src/velodyne_simulator/velodyne_gazebo_plugins/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

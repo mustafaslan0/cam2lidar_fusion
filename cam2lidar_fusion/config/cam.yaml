@@ -1,0 +1,7 @@
+cam_topic: /camera/image_raw
+fused_cam_pub: true
+fused_cam_topic: /fused/camera
+fused_pub: true
+fused_topic: /fused/points
+lidar_topic: /lidar/points
+

@@ -1,0 +1,24 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/aslan/ws_list/race_car_ws/install/slam_toolbox/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/car_demo/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/prius_msgs/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/nav_controller/lib/python3.10/site-packages",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_ros/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_msgs/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/costmap_generator/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/aslan/ws_list/race_car_ws/install/slam_toolbox/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/car_demo/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/prius_msgs/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/nav_controller/lib/python3.10/site-packages",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_ros/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/gazebo_msgs/local/lib/python3.10/dist-packages",
+        "/home/aslan/ws_list/race_car_ws/install/costmap_generator/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
