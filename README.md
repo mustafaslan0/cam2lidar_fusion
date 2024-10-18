@@ -3,10 +3,12 @@ The cam2lidar_fusion ROS 2 package provides a solution for fusing data from a ca
 
 Key features:
 
-Synchronization of camera and LiDAR data
-Projection method using a manually defined transformation matrix
-Improved environmental perception and object recognition through data fusion
+- Synchronization of camera and LiDAR data
+* Projection method using a manually defined transformation matrix
++ Improved environmental perception and object recognition through data fusion
+  
 This package is ideal for developers looking to improve the accuracy of systems that rely on both camera and LiDAR for environmental sensing.
 
 # SETUP
 
+  
