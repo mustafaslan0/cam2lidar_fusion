@@ -9,13 +9,14 @@ Key features:
   
 This package is ideal for developers looking to improve the accuracy of systems that rely on both camera and LiDAR for environmental sensing.
 
-# SETUP
+# Setup
 
 
       mkdir -p colcon_ws/src
       git clone https://github.com/mustafaslan0/cam2lidar_fusion.git
       colcon build
 ok now you are ready you can set the parameters in fusion.launch.py and use it
+# Example
   
       ros2 run cam2lidar_fusion cam2lidar_fusion
 or
