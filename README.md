@@ -1,6 +1,10 @@
 # cam2lidar_fusion
 The cam2lidar_fusion ROS 2 package provides a solution for fusing data from a camera and LiDAR sensor using a projection-based method, resulting in richer and more meaningful environmental perception. The package utilizes a manually defined transformation matrix to align data from both sensors into a unified coordinate system. This fusion approach enhances object detection and tracking by combining both distance and visual information, making it particularly useful for autonomous vehicles and robotic systems.
 
+#test video
+
+[![Video](https://img.youtube.com/vi/DJlzY6ZQrGw/maxresdefault.jpg)](https://www.youtube.com/watch?v=DJlzY6ZQrGw)
+
 Key features:
 
 - Synchronization of camera and LiDAR data
