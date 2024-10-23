@@ -3,7 +3,7 @@ The cam2lidar_fusion ROS 2 package provides a solution for fusing data from a ca
 
 #test video
 
-[![Video](https://img.youtube.com/vi/DJlzY6ZQrGw/maxresdefault.jpg)](https://www.youtube.com/watch?v=DJlzY6ZQrGw)
+https://youtu.be/DJlzY6ZQrGw
 
 Key features:
 
