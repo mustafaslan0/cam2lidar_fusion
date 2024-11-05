@@ -27,12 +27,15 @@ import rclpy
 from rclpy.node import Node
 import numpy as np
 import cv2
-from sensor_msgs.msg import Image, CameraInfo, PointCloud2
+from sensor_msgs.msg import Image, CameraInfo, PointCloud2 , PointField
 from cv_bridge import CvBridge
 import sensor_msgs_py.point_cloud2 as pc2
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
 import tf_transformations
+from fusion_interfaces.srv import Distance
+from fusion_interfaces.srv import Box
+from std_msgs.msg import Header
 
 class Fusion(Node):
 
@@ -46,8 +49,8 @@ class Fusion(Node):
         self.fused_topic = self.declare_parameter('fused_topic', '/fused/points').get_parameter_value().string_value
         self.fused_cam_topic = self.declare_parameter('fused_cam_topic', '/fused/camera').get_parameter_value().string_value
         self.fused_cam_pub = self.declare_parameter('fused_cam_pub', True).get_parameter_value().bool_value
-        self.fused_pub = self.declare_parameter('fused_pub', False).get_parameter_value().bool_value
-        self.fused_cam_veiw = self.declare_parameter('fused_cam_veiw', False).get_parameter_value().bool_value
+        self.fused_pub = self.declare_parameter('fused_pub', True).get_parameter_value().bool_value
+        self.fused_cam_veiw = self.declare_parameter('fused_cam_veiw', True).get_parameter_value().bool_value
         self.camera_positon = self.declare_parameter('camera_positon', [0.0, 0.0, -0.49]).get_parameter_value().double_array_value
         self.camera_rpy = self.declare_parameter('camera_rpy', [4.71, 4.71, 3.14]).get_parameter_value().double_array_value
         self.lidar_positon = self.declare_parameter('lidar_positon', [0.0, 0.0, 0.0]).get_parameter_value().double_array_value
@@ -64,17 +67,45 @@ class Fusion(Node):
         self.get_logger().info(f'fused_cam_veiw: {self.fused_cam_veiw}')
         
 
+        self.service = self.create_service(Box, 'distance', self.distance_callback)
         self.image_sub = self.create_subscription(Image, self.cam_topic, self.image_callback, 10)
         self.camera_info_sub = self.create_subscription(CameraInfo, self.cam_info_topic, self.camera_info_callback, 10)
         self.lidar_sub = self.create_subscription(PointCloud2, self.lidar_topic, self.lidar_callback, 10)
         if self.fused_cam_pub:
             self.fused_cam_pub = self.create_publisher(Image, self.fused_cam_topic, 10)
+        if self.fused_pub:
+            self.fused_pc_pub = self.create_publisher(PointCloud2, self.fused_topic, 10)
 
 
         self.camera_matrix = None
         self.dist_coeffs = None
         self.lidar_points = None
         self.camera_image = None
+        self.pub_points = []
+        self.point_distance_list = []
+
+   
+    def distance_callback(self, request, response):
+        self.get_logger().info('Incoming request')
+        self.get_logger().info(f'x1: {request.x1} y1: {request.y1} x2: {request.x2} y2: {request.y2}')
+        d = 0
+        n = 0
+        for point in self.point_distance_list:
+            if request.x1 < point[0] and point[0] < request.x2 :
+                if request.y1 <point[1] and point[1] < request.y2:
+                    if point[2] == 0:
+                        continue
+                    n += 1
+                    d += point[2]
+                    
+        if n > 0:
+            response.distance = float(d / n)
+            print(f"distance: {d} / {n} = {response.distance}")
+
+            return response
+        else:
+            response.distance = -1.0
+            return response
 
     def rotation_matrix(self,roll, pitch, yaw):
         R_x = np.array([[1, 0, 0],
@@ -135,6 +166,7 @@ class Fusion(Node):
             return
         transformation_matrix = self.matrix_calc()
         
+        self.point_distance_list = []
         
         for point in self.lidar_points:
             # LiDAR point in homogeneous coordinates
@@ -147,17 +179,63 @@ class Fusion(Node):
                 x, y = int(uv[0]), int(uv[1])
                 # Draw the point on the image
                 if 0 <= x < self.camera_image.shape[1] and 0 <= y < self.camera_image.shape[0]:
+                    color = self.camera_image[y, x]
+                    pcolor = (color[2] << 16) | (color[1] << 8) | color[0]
                     cv2.circle(self.camera_image, (x, y), 3, (0, 0, 255), -1)
+                    self.pub_points.append([point[0], point[1], point[2], pcolor])
+                    self.point_distance_list.append([x, y, camera_point[2]])
+                    # print(f'x: {x} y: {y} distance: {camera_point[2]}')
+
+        if self.fused_pub:
+            self.publish_fused_cloud(self.pub_points)
+
+                    # print(f'x: {x} y: {y} distance: {camera_point[2]}')
 
         if self.fused_cam_veiw:
             cv2.imshow("Fused camera lidar image", self.camera_image)
             cv2.waitKey(1)
         if self.fused_cam_pub:
             self.publish_fused_cam(self.camera_image)
+        
+        
+        
+        
+        
 
     def publish_fused_cam(self, img):
         img_msg = self.bridge.cv2_to_imgmsg(img, 'bgr8')
         self.fused_cam_pub.publish(img_msg)
+    
+
+    def publish_fused_cloud(self, points):
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1)
+        ]
+
+        width = len(points)
+        point_step = 16  # 4 fields of 4 bytes each (float32)
+        row_step = width * point_step
+        header = Header()
+        header.stamp = self.get_clock().now().to_msg()
+        header.frame_id = 'base_link'
+
+        
+        cloud_msg = PointCloud2(
+            header=header,
+            height=1,
+            width=len(points),
+            is_dense=False,
+            is_bigendian=False,
+            fields=fields,
+            point_step=point_step,
+            row_step=row_step,
+            data=np.array(points, dtype=np.float32).tobytes()
+        )
+
+        self.fused_pc_pub.publish(cloud_msg)
         
 
 
