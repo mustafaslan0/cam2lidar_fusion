@@ -11,7 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name+'/launch', ['launch/fusion.launch.py']),
-
+        ('share/' + package_name+'/launch', ['launch/fusion.launch_3d_lidar.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -19,7 +19,7 @@ setup(
     maintainer_email='mustafaslan137@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
+    # tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'cam2lidar_fusion = cam2lidar_fusion.fusion:main',

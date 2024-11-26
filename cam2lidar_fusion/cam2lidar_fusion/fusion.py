@@ -27,7 +27,7 @@ import rclpy
 from rclpy.node import Node
 import numpy as np
 import cv2
-from sensor_msgs.msg import Image, CameraInfo, PointCloud2 , PointField
+from sensor_msgs.msg import Image, CameraInfo, PointCloud2 , PointField,LaserScan
 from cv_bridge import CvBridge
 import sensor_msgs_py.point_cloud2 as pc2
 import tf2_ros
@@ -36,6 +36,7 @@ import tf_transformations
 from fusion_interfaces.srv import Distance
 from fusion_interfaces.srv import Box
 from std_msgs.msg import Header
+from laser_geometry import LaserProjection
 
 class Fusion(Node):
 
@@ -43,9 +44,10 @@ class Fusion(Node):
         super().__init__('fusion')
         self.bridge = CvBridge()
 
+        self.lidar_mode = self.declare_parameter('lidar_mode', '2d').get_parameter_value().string_value
         self.cam_topic = self.declare_parameter('cam_topic', '/front_camera/image_raw').get_parameter_value().string_value
         self.cam_info_topic = self.declare_parameter('cam_info_topic', '/front_camera/camera_info').get_parameter_value().string_value
-        self.lidar_topic = self.declare_parameter('lidar_topic', '/cloud').get_parameter_value().string_value
+        self.lidar_topic = self.declare_parameter('lidar_topic', '/ray/laserscan').get_parameter_value().string_value
         self.fused_topic = self.declare_parameter('fused_topic', '/fused/points').get_parameter_value().string_value
         self.fused_cam_topic = self.declare_parameter('fused_cam_topic', '/fused/camera').get_parameter_value().string_value
         self.fused_cam_pub = self.declare_parameter('fused_cam_pub', True).get_parameter_value().bool_value
@@ -57,6 +59,7 @@ class Fusion(Node):
         self.lidar_rpy = self.declare_parameter('lidar_rpy', [0.0, 0.0, 0.0]).get_parameter_value().double_array_value
 
 
+        self.get_logger().info(f'lidar_mode: {self.lidar_mode}')
         self.get_logger().info(f'cam_topic: {self.cam_topic}')
         self.get_logger().info(f'cam_info_topic: {self.cam_info_topic}')
         self.get_logger().info(f'lidar_topic: {self.lidar_topic}')
@@ -70,7 +73,13 @@ class Fusion(Node):
         self.service = self.create_service(Box, 'distance', self.distance_callback)
         self.image_sub = self.create_subscription(Image, self.cam_topic, self.image_callback, 10)
         self.camera_info_sub = self.create_subscription(CameraInfo, self.cam_info_topic, self.camera_info_callback, 10)
-        self.lidar_sub = self.create_subscription(PointCloud2, self.lidar_topic, self.lidar_callback, 10)
+        if self.lidar_mode == '3d':
+            self.lidar_sub = self.create_subscription(PointCloud2, self.lidar_topic, self.lidar_callback, 10)
+        elif self.lidar_mode == '2d':
+            self.lidar_sub = self.create_subscription(LaserScan, self.lidar_topic, self.scan_callback, 10)
+        else:
+            self.get_logger().error('lidar_mode must be 2d or 3d')
+            return
         if self.fused_cam_pub:
             self.fused_cam_pub = self.create_publisher(Image, self.fused_cam_topic, 10)
         if self.fused_pub:
@@ -83,6 +92,13 @@ class Fusion(Node):
         self.camera_image = None
         self.pub_points = []
         self.point_distance_list = []
+
+    def scan_callback(self, msg):
+        self.laser_projector = LaserProjection()
+        pointcloud_msg = self.laser_projector.projectLaser(msg)
+        self.lidar_points = list(pc2.read_points(pointcloud_msg, skip_nans=True, field_names=("x", "y", "z")))
+
+        
 
    
     def distance_callback(self, request, response):
@@ -188,6 +204,7 @@ class Fusion(Node):
 
         if self.fused_pub:
             self.publish_fused_cloud(self.pub_points)
+            self.pub_points = []
 
                     # print(f'x: {x} y: {y} distance: {camera_point[2]}')
 

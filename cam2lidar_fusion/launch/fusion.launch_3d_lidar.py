@@ -11,10 +11,10 @@ def generate_launch_description():
             name='fusion',   
             output='screen',      
             parameters=[{
-                "lidar_mode": "2d",
+                "lidar_mode": "3d",
                 'cam_topic': '/front_camera/image_raw',
                 'cam_info_topic': '/front_camera/camera_info',
-                'lidar_topic': '/ray/laserscan',
+                'lidar_topic': '/cloud',
                 'fused_topic': '/fused/points',
                 'fused_cam_topic': '/fused/camera',
                 'fused_cam_pub': True,
