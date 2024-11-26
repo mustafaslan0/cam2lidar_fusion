@@ -42,12 +42,13 @@ or
     >/fused/camera
 
 ## Parameters
-
+  + lidar_mode: '2d' or '3d'
+    >lidar type 2d and 3d 
   + cam_topic: '/front_camera/image_raw'
     >subscribed camera
   + cam_info_topic: '/front_camera/camera_info'
     >with this topic the camera is calibrated
-  + lidar_topic: '/cloud'
+  + lidar_topic: '/cloud' or 'laser_scan'
     >subscribed lidar topic
   + fused_topic: '/fused/points'
     >fused pointcloud
